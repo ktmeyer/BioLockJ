@@ -1,0 +1,60 @@
+﻿Attribute	Type	Comments
+StartWeight.g	Continuous	
+EndWeight.g	Continuous	
+Date	Categorical	
+Source	Categorical	
+Animal Nu	Categorical	
+Exp or Ctrl	Binary	
+Experiment/ Sample info	Categorical	Inconsistent Description
+BarcodeSequence	Categorical	
+LinkerPrimerSequence	Categorical	
+BarcodePlate	Categorical	
+Well	Categorical	
+Tube # (Sample ID)	Categorical	
+Length of study	Categorical	
+Sample Description	Categorical	
+Group	Binary	
+Sex	Binary	
+Date Exp performed	Categorical	
+Housing	Categorical	
+Chow Fed	Categorical	Only one value
+Location of experiment	Categorical	Only one value
+Elevated Plus Maze: Time in Open Arms (sec)	Continuous	
+Elevated Plus Maze:Entries to Open Arms	Continuous	
+Elevated Plus Maze:distance traveled in Open Arms (meters)	Continuous	
+Elevated Plus Maze:Time in Closed Arms (sec)	Continuous	
+Elevated Plus Maze:Entries to Closed Arms	Continuous	
+Elevated Plus Maze:distance traveled in Closed Arms (meters)	Continuous	
+Elevated Plus Maze:Total Distance Traveled (meters)	Continuous	
+Elevated Plus Maze:Average Speed in Open Arms (m per s)	Continuous	
+Elevated Plus Maze:Average Speed in Closed Arms (m per s)	Continuous	
+Elevated Plus Maze:# of rearings in Closed Arms	Continuous	
+Elevated Plus Maze:# of groomings in Closed Arms	Continuous	
+Light/Dark OF:time spent in dark zone (sec)	Continuous	
+Light/Dark OF:entries to the dark zone	Continuous	
+Light/Dark OF:longest visit to dark zone (sec)	Continuous	
+Light/Dark OF:latency to first entry to dark zone (sec)	Continuous	
+Light/Dark OF:time spent in the light zone (sec)	Continuous	
+Light/Dark OF:entries to the light zone	Continuous	
+Light/Dark OF:distance traveled in the light zone (meters)	Continuous	
+Light/Dark OF:average speed in the light zone (m per s)	Continuous	
+Light/Dark OF:# of rearings in the light zone	Continuous	
+Light/Dark OF:time rearing in the light zone (sec)	Continuous	
+Open Field:Total Distance Traveled (meters)	Continuous	
+Open Field:Average Speed (m per s)	Continuous	
+Open Field:Time spent in periphery (sec)	Continuous	
+Open Field:# of entries to the periphery	Continuous	
+Open Field:Distance Traveled in periphery (meters)	Continuous	
+Open Field:Speed in periphery (m per s)	Continuous	
+Open Field:Time spent in center (sec)	Continuous	
+Open Field:# of entries to center 	Continuous	
+Open Field:Distance Traveled in center (meters)	Continuous	
+Open Field:Speed in the center (m per s)	Continuous	
+Open Field:# of rearings in the periphery	Continuous	
+Open Field:Time rearing in the periphery (sec)	Continuous	
+Open Field:# of rearings in the center	Continuous	
+Open Field:Time rearing in the center (sec)	Continuous	
+Open Field:# of groomings in the periphery	Continuous	
+Open Field:Time grooming in the periphery (sec)	Continuous	
+Open Field:# of groomings in the center	Continuous	
+Open Field:Time grooming in the center (sec)	Continuous

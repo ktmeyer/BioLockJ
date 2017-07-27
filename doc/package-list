@@ -1,0 +1,14 @@
+bioLockJ
+bioLockJ.module.classifier
+bioLockJ.module.classifier.r16s
+bioLockJ.module.classifier.r16s.qiime
+bioLockJ.module.classifier.wgs
+bioLockJ.module.parser
+bioLockJ.module.parser.r16s
+bioLockJ.module.parser.wgs
+bioLockJ.module.postProcessor
+bioLockJ.module.preProcessor
+bioLockJ.node
+bioLockJ.node.r16s
+bioLockJ.node.wgs
+bioLockJ.util
