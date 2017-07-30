@@ -20,3 +20,10 @@ BioLockJ writes and executes bash shell scripts that call command line bioinform
 6.	Build statistical models to find significant OTUs correlated with metadata
 7.	Generate summary tables and PDF reports to assess p-value and R2 values
 8.	Email user a summary report upon completion
+
+https://github.com/msioda/BioLockJ/blob/master/doc/img/BioLockJ_Flowchart.png
+
+## System Diagram
+
+![alt text](https://github.com/msioda/BioLockJ/blob/master/doc/img/BioLockJ_Flowchart.png "BioLockJ System Diagram")
+
