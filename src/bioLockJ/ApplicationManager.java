@@ -63,9 +63,7 @@ public class ApplicationManager extends BioLockJ
 	private static int pollCounter = 0;
 	private static final int pollTime = 60;
 	private static final List<String> runTimes = new ArrayList<>();
-
 	private static final long startTime = System.currentTimeMillis();
-
 	private static String statusMsg = "";
 
 	/**
@@ -82,10 +80,10 @@ public class ApplicationManager extends BioLockJ
 	 * read property file, copy it to project directory, initialize ConfigUtil
 	 * and call runProgram().
 	 *
-	 * If the password param is given, the password is envrypted & stored to the
+	 * If the password param is given, the password is encrypted & stored to the
 	 * prop file.
 	 *
-	 * @param args - args[0] path to property file - args[1] cleartext admin
+	 * @param args - args[0] path to property file - args[1] clear-text admin
 	 *        email password
 	 */
 	public static void main( final String[] args )
@@ -175,7 +173,6 @@ public class ApplicationManager extends BioLockJ
 	private static void buildNewProject( final ConfigUtil configUtil ) throws Exception
 	{
 		final String projectRoot = configUtil.getAProperty( PROJECTS_DIR );
-		//System.out.println( "projectRoot = " +  projectRoot );
 		if( ( projectRoot == null ) || ( projectRoot.trim().length() < 1 ) )
 		{
 			throw new Exception( "Required property missing: " + PROJECTS_DIR );
@@ -193,12 +190,51 @@ public class ApplicationManager extends BioLockJ
 		configUtil.setProperty( LOG_FILE, logFileName );
 		configUtil.setProperty( ROOT_DIR, projectDir );
 		log = LoggerFactory.getLogger( ApplicationManager.class );
-
 		initializeGlobalProps( configUtil );
-		configUtil.setMetaUtil( new MetadataUtil() );
 		initializeMaps();
+		try
+		{
+			configUtil.setMetaUtil( new MetadataUtil() );
+			validateMetaDependantProps( configUtil );
+		}
+		catch( Exception ex )
+		{
+			log.error( "Unable to initialize MetadataUtil: " + ex.getMessage() );
+			ex.printStackTrace();
+		}
+		
 		log.info( "BioLockJ initialized" );
 	}
+	
+	private static void validateMetaDependantProps( ConfigUtil configUtil ) throws Exception
+	{
+		if( configUtil.getMetaUtil() == null )
+		{
+			if( runRscript )
+			{
+				throwMisssingMetaError( CONTROL_RUN_R_SCRIPT + "=Y" ); 
+			}
+			if( reportNumReads )
+			{
+				throwMisssingMetaError( REPORT_NUM_READS + "=Y" ); 
+			}
+			if( reportNumHits )
+			{
+				throwMisssingMetaError( REPORT_NUM_HITS + "=Y" ); 
+			}
+			if( isQiime )
+			{
+				throwMisssingMetaError( PROJECT_CLASSIFIER_TYPE + "=" + classifierType ); 
+			}
+		}
+	}
+	
+	private static void throwMisssingMetaError( final String err ) throws Exception
+	{
+		throw new Exception( "Metadata file & descriptor are required due to dependant parameters: [" + err + "]\n" +
+				"Set valid paths for config properties: [ " + METADATA_FILE + " & " + METADATA_DESCRIPTOR + " ]" );
+	}
+
 
 	/**
 	 * If user prop indicates they need a copy of the input files, copy them to the project dir.
@@ -349,33 +385,33 @@ public class ApplicationManager extends BioLockJ
 		final List<Module> list = new ArrayList<>();
 		int count = 0;
 
-		//		if( count == 0 )
-		//		{
-		//			addExecutor( PrepData.class.getName(), list, count++ );
-		//			addExecutor( Multiplexer.class.getName(), list, count++ );
-		//			return list;
-		//		}
+//				if( count == 0 )
+//				{
+//					addExecutor( PrepData.class.getName(), list, count++ );
+//					//addExecutor( Multiplexer.class.getName(), list, count++ );
+//					return list;
+//				}
 
 		final boolean qiimeClosedRef = qiimePickOtuScript.equals( SCRIPT_PICK_CLOSED_REF_OTUS );
 		final boolean qiimeOpenRef = qiimePickOtuScript.equals( SCRIPT_PICK_OPEN_REF_OTUS );
 		final boolean qiimeDeNovo = qiimePickOtuScript.equals( SCRIPT_PICK_OPEN_REF_OTUS );
 
-		if( runClassifier && copyInputDirs )
+		if( copyInputDirs )
 		{
 			copyInputDirs();
 		}
 
-		if( runClassifier && trimSeqs )
+		if( trimSeqs )
 		{
 			addExecutor( SeqTrimmer.class.getName(), list, count++ );
 		}
 
-		if( runClassifier && mergePairs )
+		if( mergePairs )
 		{
 			addExecutor( PairedSeqMerger.class.getName(), list, count++ );
 		}
 
-		if( runClassifier && rarefySeqs )
+		if( rarefySeqs )
 		{
 			addExecutor( Rarefier.class.getName(), list, count++ );
 		}

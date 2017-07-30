@@ -142,7 +142,7 @@ public abstract class BioLockJ extends Constants
 		ignoreInputFiles = getList( INPUT_IGNORE_FILES );
 
 		isQiime = ( classifierType.equals( QIIME ) );
-
+		
 		if( runOnCluster )
 		{
 			clusterCommand = requireString( CLUSTER_BATCH_COMMAND );
@@ -151,7 +151,7 @@ public abstract class BioLockJ extends Constants
 			verifyClusterParams();
 		}
 
-		if( runClassifier )
+		if( trimSeqs || mergePairs || rarefySeqs || runClassifier )
 		{
 			inputSequenceType = getInputSequenceType();
 		}
@@ -189,8 +189,9 @@ public abstract class BioLockJ extends Constants
 				qiimePickOtuScript = requireString( QIIME_PICK_OTU_SCRIPT );
 			}
 		}
+	
 	}
-
+	
 	/**
 	 * Simply copy a file to a target directory.
 	 * @param sourceFile
@@ -401,7 +402,7 @@ public abstract class BioLockJ extends Constants
 			throwPropNotFoundException( propertyName );
 		}
 
-		final File aFile = new File( config.getAProperty( propertyName ) );
+		final File aFile = new File( val );
 
 		if( !aFile.exists() || !aFile.isDirectory() )
 		{
@@ -427,7 +428,7 @@ public abstract class BioLockJ extends Constants
 			throwPropNotFoundException( propertyName );
 		}
 
-		final File aFile = new File( config.getAProperty( propertyName ) );
+		final File aFile = new File( val );
 
 		if( !aFile.exists() )
 		{
@@ -436,6 +437,33 @@ public abstract class BioLockJ extends Constants
 
 		return aFile;
 	}
+	
+	/**
+	 * Get a file - if it exists
+	 *
+	 * @param propertyName
+	 * @return
+	 * @throws Exception
+	 */
+	protected static File getExistingFile( final String propertyName ) throws Exception
+	{
+		final String val = config.getAProperty( propertyName );
+
+		if( ( val == null ) || val.isEmpty() )
+		{
+			return null;
+		}
+
+		final File aFile = new File( val );
+
+		if( !aFile.exists() )
+		{
+			return null;
+		}
+
+		return aFile;
+	}
+	
 
 	/**
 	 * Get required list (must be comma delimited value in prop file).

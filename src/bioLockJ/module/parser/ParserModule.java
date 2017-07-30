@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import bioLockJ.Constants;
 import bioLockJ.Module;
 import bioLockJ.node.OtuNode;
 import bioLockJ.node.OtuWrapper;
@@ -228,9 +229,11 @@ public abstract class ParserModule extends Module
 			final String logNormFile = tempDir + taxa + LOG_NORMAL_SUFFIX;
 			final String logNormOut = outDir + taxa + LOG_NORMAL + META_MERGED_SUFFIX;
 
-			outputMetaMergeTables( rawCountFile, rawCountOut );
-			outputMetaMergeTables( logNormFile, logNormOut );
-
+			if( config.getMetaUtil() != null )
+			{
+				outputMetaMergeTables( rawCountFile, rawCountOut );
+				outputMetaMergeTables( logNormFile, logNormOut );
+			}
 		}
 	}
 
@@ -251,7 +254,7 @@ public abstract class ParserModule extends Module
 			writeResults( map, taxaColFile );
 
 			final OtuWrapper wrapper = new OtuWrapper( taxaColFile, logBase.toLowerCase() );
-			wrapper.writeNormalizedLoggedDataToFile( config.getMetaUtil().getMetaId(), pathPrefix + LOG_NORMAL_SUFFIX );
+			wrapper.writeNormalizedLoggedDataToFile( config.getMetaId(), pathPrefix + LOG_NORMAL_SUFFIX );
 		}
 	}
 
@@ -425,9 +428,10 @@ public abstract class ParserModule extends Module
 	private void writeResults( final Map<String, Map<String, Integer>> map, final File file ) throws Exception
 	{
 		final BufferedWriter writer = new BufferedWriter( new FileWriter( file ) );
-		info( "Create " + file.getName() + " with Header ID Column =  MetaId(" + config.getMetaUtil().getMetaId()
-				+ ")" );
-		writer.write( config.getMetaUtil().getMetaId() );
+		final String metaId = config.getMetaId();
+		info( "Create " + file.getName() + " with Header ID Column =  MetaId[ " + metaId
+				+ " ]" );
+		writer.write( metaId );
 		final List<String> otuList = getOTUSAtThreshold( map );
 		Collections.sort( otuList );
 		for( final String s: otuList )

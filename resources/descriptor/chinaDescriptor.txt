@@ -1,4 +1,0 @@
-Attribute	Type	Comments
-readNumber	Binary
-patientID	Categorical
-ruralUrban	Binary

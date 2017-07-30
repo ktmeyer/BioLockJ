@@ -155,6 +155,11 @@ public class Rarefier extends Module
 
 	private void removeBadSamples() throws Exception
 	{
+		if( config.getMetaUtil() == null )
+		{
+			return;
+		}
+		
 		if( badSamples.isEmpty() )
 		{
 			info( "All samples rarefied & meet minimum read threshold - none will be ommitted..." );

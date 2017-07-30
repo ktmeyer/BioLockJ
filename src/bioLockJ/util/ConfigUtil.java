@@ -101,7 +101,7 @@ public class ConfigUtil extends Constants
 	 */
 	public File getDescriptor()
 	{
-		return metaUtil.getDescriptor();
+		return getMetaUtil().getDescriptor();
 	}
 
 	/**
@@ -110,7 +110,7 @@ public class ConfigUtil extends Constants
 	 */
 	public String getDescriptorPath()
 	{
-		return metaUtil.getDescriptor().getAbsolutePath();
+		return getDescriptor().getAbsolutePath();
 	}
 
 	/**
@@ -119,7 +119,7 @@ public class ConfigUtil extends Constants
 	 */
 	public File getMetadata()
 	{
-		return metaUtil.getMetadata();
+		return getMetaUtil().getMetadata();
 	}
 
 	/**
@@ -128,7 +128,7 @@ public class ConfigUtil extends Constants
 	 */
 	public String getMetaPath()
 	{
-		return metaUtil.getMetadata().getAbsolutePath();
+		return getMetadata().getAbsolutePath();
 	}
 
 	/**
@@ -140,6 +140,15 @@ public class ConfigUtil extends Constants
 		return metaUtil;
 	}
 
+	/**
+	 * Convenience method for metaUtil access.
+	 * @return
+	 */
+	public String getMetaId()
+	{
+		return ( ( metaUtil == null ) ? Constants.DEFAULT_META_ID : getMetaUtil().getMetaId() );
+	}
+	
 	/**
 	 * Convenience method returns all prop values as a Map.
 	 * @return
@@ -193,7 +202,7 @@ public class ConfigUtil extends Constants
 	 */
 	public void setDescriptor( final File f )
 	{
-		metaUtil.setDescriptor( f );
+		getMetaUtil().setDescriptor( f );
 	}
 
 	/**
@@ -202,7 +211,7 @@ public class ConfigUtil extends Constants
 	 */
 	public void setMetadata( final File f )
 	{
-		metaUtil.setMetadata( f );
+		getMetaUtil().setMetadata( f );
 	}
 
 	/**

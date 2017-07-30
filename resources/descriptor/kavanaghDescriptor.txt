@@ -1,9 +1,0 @@
-Attribute	Type	Comments
-Sample Type	Categorical
-Animal ID	Categorical
-Pen Location	Categorical
-Age	Continuous
-Group	Categorical
-LBP1	Continuous
-Mucosal Gene Ct	Continuous
-Fecal Gene Ct	Continuous

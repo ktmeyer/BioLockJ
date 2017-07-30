@@ -21,6 +21,7 @@ package bioLockJ;
  */
 public abstract class Constants
 {
+	public static final String DEFAULT_META_ID = "SampleId"; 
 	public static final String ALPHA_DIVERSITY_TABLE = "alphaDiversity.txt";
 	public static final int ATT_TYPE_INDEX = 0;
 
@@ -102,6 +103,7 @@ public abstract class Constants
 	public static final String INPUT_TRIM_PREFIX = "input.trimPrefix";
 	public static final String INPUT_TRIM_SEQ_PATH = "input.trimSeqPath";
 	public static final String INPUT_TRIM_SUFFIX = "input.trimSuffix";
+	public static final String INPUT_KEEP_SEQS_MISSING_PRIMER = "input.keepSeqsMissingPrimer";
 
 	public static final String KRAKEN = "KRAKEN";
 	public static final String KRAKEN_DATABASE = "kraken.db";

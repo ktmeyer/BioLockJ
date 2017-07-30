@@ -60,23 +60,116 @@ public class MetadataUtil extends BioLockJ
 		logWelcomeHeader();
 		logConfigFileSettings();
 
-		metadataFile = requireExistingFile( METADATA_FILE );
-		descriptorFile = requireExistingFile( METADATA_DESCRIPTOR );
-
+		if( runRscript )
+		{
+			metadataFile = requireExistingFile( METADATA_FILE );
+			descriptorFile = requireExistingFile( METADATA_DESCRIPTOR );
+		}
+		else
+		{
+			metadataFile = getExistingFile( METADATA_FILE );
+			descriptorFile = getExistingFile( METADATA_DESCRIPTOR );
+		}
+		
+		if( metadataFile == null )
+		{
+			throw new Exception( "Metadata file not found!" );
+		}
+		else if( descriptorFile == null )
+		{
+			throw new Exception( "Descriptor file not found!" );
+		}
+		
 		setRscriptFields();
+		
+		validateMetadataValues();
 
-		copyFile( metadataFile, requireString( ROOT_DIR ) );
 		copyFile( descriptorFile, requireString( ROOT_DIR ) );
-
+		
 		metadataFile = new File( requireString( ROOT_DIR ) + metadataFile.getName() );
 		descriptorFile = new File( requireString( ROOT_DIR ) + descriptorFile.getName() );
-		if( !metadataFile.exists() || !descriptorFile.exists() )
-		{
-			throw new Exception( "Unable to load metadata and descriptor files from " + requireString( ROOT_DIR ) );
-		}
 
 		loadMetadata( metadataFile, descriptorFile );
 		verifyReportFields();
+	}
+	
+	private void validateMetadataValues() throws Exception
+	{
+		final String newMeta = requireString( ROOT_DIR ) + metadataFile.getName();
+		final BufferedReader reader = new BufferedReader( new FileReader( metadataFile ) );
+		final BufferedWriter writer = new BufferedWriter( new FileWriter( newMeta ) );
+		try
+		{
+			boolean isHeaderRow = true;
+			int row = 1;
+			List<String> colNames = new ArrayList<String>();
+			for( String line = reader.readLine(); line != null; line = reader.readLine() )
+			{
+				if( isHeaderRow )
+				{
+					isHeaderRow = false;
+					writer.write( line + "\n" );
+					int i = 1;
+					final String[] cells = line.split( "\t", -1 );
+					for( String cell: cells )
+					{
+						if( ( cell == null) || cell.trim().isEmpty() )
+						{
+							throw new Exception( "Metadata file column names must all be non-null. Column #" + i + " is empty!" );
+						}
+						else if( colNames.contains( cell.trim() ) )
+						{
+							int j = 1;
+							String dup = null;
+							for( String name: colNames )
+							{
+								if( name.equals( cell.trim() ) )
+								{
+									dup = name;
+									break;
+								}
+								j++;
+							}
+							
+							throw new Exception( "Metadata file column names must be unique.  Column #" + i 
+									+ " is a duplicate of Column #" + j + " - duplicate name = [" + dup + "]" );
+						}
+						colNames.add( cell.trim() );
+						i++;
+					}
+					
+					continue;
+				}
+
+				final String[] cells = line.split( "\t", -1 );
+				int i = 1;
+				StringBuffer sb = new StringBuffer();
+				for( String cell: cells )
+				{
+					if( ( cell == null) || cell.trim().isEmpty() )
+					{
+						cell = nullChar;
+						debug( "====> Set Row#[" + row  + "] - Column#[" + i + "] = " + cell );
+					}
+					
+					if( i > 1 )
+					{
+						sb.append( TAB );
+					}
+					sb.append( cell );
+					i++;
+				}
+				
+				writer.write( sb.toString() + "\n" );
+				row++;
+			}	
+		}
+		finally
+		{
+			reader.close();
+			writer.flush();
+			writer.close();
+		}
 	}
 
 	/**
@@ -531,6 +624,7 @@ public class MetadataUtil extends BioLockJ
 			}
 		}
 	}
+	
 
 	/**
 	 * Process a file by getting clean values for each cell in the spreadsheet.

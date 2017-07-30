@@ -1,5 +1,0 @@
-Attribute	Type	Comments
-Sample	Categorical
-Project	Categorical
-Run_Seq	Categorical
-Pool	Categorical

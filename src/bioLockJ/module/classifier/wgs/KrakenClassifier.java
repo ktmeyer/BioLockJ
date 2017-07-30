@@ -116,7 +116,7 @@ public class KrakenClassifier extends ClassifierModule
 			final ArrayList<String> lines = new ArrayList<>( 2 );
 
 			lines.add( classifierExe + " --db " + krakenDatabase.getAbsolutePath() + switches + "--output " + tempFile
-					+ file.getAbsolutePath() + " " + map.get( file ).getAbsolutePath() );
+					+ " " + file.getAbsolutePath() + " " + map.get( file ).getAbsolutePath() );
 
 			lines.add( classifierExe + "-translate --db " + krakenDatabase.getAbsolutePath() + " --mpa-format "
 					+ tempFile + " > " + krakenOutput );

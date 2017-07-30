@@ -97,8 +97,8 @@ public class RScriptBuilder extends Module
 		initRStructures();
 		populateOutputVectors();
 		getFDRpAdjustedVectors();
-		plotBoxPlots();
 		plotSummaryHistograms();
+		plotBoxPlots();
 		outputSummaryTable();
 		closeRScript();
 	}
@@ -146,6 +146,7 @@ public class RScriptBuilder extends Module
 		}
 	}
 
+	// Add parametric t-test
 	private void addBinaryAnalysis( final String attribute ) throws Exception
 	{
 		final String cap = capitalize( attribute );
@@ -156,6 +157,7 @@ public class RScriptBuilder extends Module
 		addLine( MAIN_BODY_INDENT + R_SQUARED + cap + "[index] = summary( myLm )$r.squared" );
 	}
 
+	// add non-parametric kruskil Wallis
 	private void addCategoricalAnalysis( final String attribute ) throws Exception
 	{
 		final String cap = capitalize( attribute );
@@ -165,6 +167,7 @@ public class RScriptBuilder extends Module
 		addLine( MAIN_BODY_INDENT + R_SQUARED + cap + "[index] = summary( myLm )$r.squared" );
 	}
 
+	// linear regression to get pval
 	private void addContinuousAnalysis( final String attribute ) throws Exception
 	{
 		final String cap = capitalize( attribute );
@@ -647,7 +650,7 @@ public class RScriptBuilder extends Module
 						+ ", las=2, xlab=\"" + attribute + "\", ylab=\"" + ylab + "\" )" );
 
 				addLine( MAIN_BODY_INDENT + "stripchart( colVals ~ " + attribute
-						+ ", data=myFrame, vertical=TRUE, pch=21, add=TRUE )" );
+						+ ", data=myFrame, vertical=TRUE, method=\"jitter\" pch=16, add=TRUE )" );
 			}
 			else
 			{

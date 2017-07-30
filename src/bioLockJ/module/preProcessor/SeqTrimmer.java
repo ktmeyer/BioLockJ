@@ -10,10 +10,12 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import bioLockJ.Module;
 
 /**
@@ -21,9 +23,11 @@ import bioLockJ.Module;
  */
 public class SeqTrimmer extends Module
 {
+	private static Set<String> fileNames = new HashSet<>();
 	private static Hashtable<String, Integer> numLinesNoPrimer = new Hashtable<>();
 	private static Hashtable<String, Integer> numLinesWithPrimer = new Hashtable<>();
 	private static File trimSeqFile = null;
+	private static boolean keepSeqsMissingPrimer = false;
 
 	/**
 	 * Verify file containing primers to trim exists.
@@ -36,6 +40,7 @@ public class SeqTrimmer extends Module
 		{
 			throw new Exception( "File configured in property " + INPUT_TRIM_SEQ_PATH + " does not exist!" );
 		}
+		keepSeqsMissingPrimer = requireBoolean( INPUT_KEEP_SEQS_MISSING_PRIMER );
 	}
 
 	/**
@@ -45,19 +50,48 @@ public class SeqTrimmer extends Module
 	@Override
 	public void executeProjectFile() throws Exception
 	{
-
 		trimFileSeqs();
-
-		for( final String key: numLinesWithPrimer.keySet() )
+		
+		TreeSet<String> ids = new TreeSet<String>( numLinesWithPrimer.keySet() );
+		for( String name: fileNames )
 		{
-			warn( "# Primers removed from [" + key + "] = " + numLinesWithPrimer.get( key ) );
+			boolean found = false;
+			for( String id: ids )
+			{
+				if( name.startsWith( id ) )
+				{
+					found = true;
+				}
+			}
+			if( !found )
+			{
+				warn( "File contains no primers!  File name: " + name );
+			}
 		}
 
-		for( final String key: numLinesNoPrimer.keySet() )
+		if( !keepSeqsMissingPrimer )
 		{
-			warn( "# Missing Primers in [" + key + "] = " + numLinesNoPrimer.get( key ) );
+			warn( INPUT_KEEP_SEQS_MISSING_PRIMER + "=Y so any sequences without a primer have been discarded" );
 		}
-
+		
+		long totalPrimer = 0;
+		long totalNoPrimer = 0;
+		for( final String key: ids )
+		{
+			int a = numLinesWithPrimer.get( key );
+			int b = numLinesNoPrimer.get( key );
+			totalPrimer += a;
+			totalNoPrimer += b;
+			info( key + " reads with primer = " + a + "/" + ( a + b ) );
+		}
+		
+		if( (totalPrimer + totalNoPrimer) > 1.0 )
+		{
+			DecimalFormat df = new DecimalFormat("##.##%");
+			double ratio = totalNoPrimer/(totalPrimer + totalNoPrimer);
+			String formattedPercent = df.format(ratio);
+			info( "Percentage of reads missing primers = " + formattedPercent );
+		}
 	}
 
 	private Set<String> getSeqs() throws Exception
@@ -98,10 +132,22 @@ public class SeqTrimmer extends Module
 		final List<File> files = getInputFiles();
 		final int count = count( files );
 		final String fileExt = "." + ( isFastA() ? FASTA: FASTQ );
-		final int numTrimmed = 0;
+		final int target = isFastA() ? 2: 4;
+		int fileCount = 0;
 		info( "Trimming primers from " + count + " " + ( isFastA() ? FASTA: FASTQ ) + " files..." );
 		for( final File file: files )
 		{
+			String fileName = file.getName();
+			fileCount++;
+			if( !fileName.contains( rvReadSuffix )  )
+			{
+				if( fileName.toLowerCase().endsWith( ".gz" ) )
+				{
+					fileName = fileName.substring( 0, fileName.length() - 3 );
+				}
+				fileNames.add( fileName );
+			}
+			
 			final String trimFileName;
 			if( isFastQ() )
 			{
@@ -132,6 +178,10 @@ public class SeqTrimmer extends Module
 			{
 				int lineCounter = 1;
 				int seqLength = 0;
+				int seqCount = 0;
+				boolean validRecord = false;
+				String[] seqLines = new String[ target ];
+				
 				for( String line = reader.readLine(); line != null; line = reader.readLine() )
 				{
 					boolean found = false;
@@ -139,7 +189,7 @@ public class SeqTrimmer extends Module
 
 					if( isFastQ() )
 					{
-						if( ( lineCounter % 4 ) == 2 )
+						if( ( lineCounter % target ) == 2 )
 						{
 							seqLength = 0;
 							for( final String seq: seqs )
@@ -166,6 +216,7 @@ public class SeqTrimmer extends Module
 							}
 							else
 							{
+								validRecord = true;
 								Integer x = numLinesWithPrimer.get( trimFileName );
 								if( x == null )
 								{
@@ -175,14 +226,14 @@ public class SeqTrimmer extends Module
 							}
 
 						}
-						else if( ( lineCounter % 4 ) == 0 )
+						else if( ( lineCounter % target ) == 0 )
 						{
 							line = line.substring( seqLength );
 						}
 					}
 					else
 					{
-						if( ( lineCounter % 2 ) == 0 )
+						if( ( lineCounter % target ) == 0 )
 						{
 							seqLength = 0;
 							for( final String seq: seqs )
@@ -208,6 +259,7 @@ public class SeqTrimmer extends Module
 								}
 								else
 								{
+									validRecord = true;
 									Integer x = numLinesWithPrimer.get( trimFileName );
 									if( x == null )
 									{
@@ -218,8 +270,22 @@ public class SeqTrimmer extends Module
 							}
 						}
 					}
-
-					writer.write( line + "\n" );
+					
+					
+					seqLines[seqCount++] = line;
+					if( seqCount == target )
+					{
+						if( keepSeqsMissingPrimer || validRecord )
+						{
+							for( int j=0; j<target; j++ )
+							{
+								writer.write( seqLines[j] + "\n" );
+							}
+						}
+						seqCount = 0;
+						validRecord = false;
+					}
+					
 					lineCounter++;
 				}
 			}
@@ -234,12 +300,12 @@ public class SeqTrimmer extends Module
 				writer.close();
 			}
 
-			if( ( ( numTrimmed + 1 ) % 25 ) == 0 )
+			if( ( ( fileCount + 1 ) % 25 ) == 0 )
 			{
-				info( "Done trimming " + numTrimmed + "/" + count + " files." );
+				info( "Done trimming " + fileCount + "/" + count + " files." );
 			}
 		}
 
-		info( "Done trimming " + numTrimmed + "/" + count + " files." );
+		info( "Done trimming " + fileCount + "/" + count + " files." );
 	}
 }

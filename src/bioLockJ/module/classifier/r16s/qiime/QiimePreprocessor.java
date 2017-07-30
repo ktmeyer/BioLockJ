@@ -330,7 +330,7 @@ public class QiimePreprocessor extends QiimeClassifier
 	{
 		final StringBuffer sb = new StringBuffer();
 		sb.append( getAwk() + " -F'\\t' -v OFS=\"\\t\" '{ print $1" );
-		final List<String> cols = config.getMetaUtil().getAttributes( config.getMetaUtil().getMetaId() );
+		final List<String> cols = config.getMetaUtil().getAttributes( config.getMetaId() );
 
 		final boolean hasQm1 = config.getMetaUtil().getAttributeNames().contains( BARCODE_SEQUENCE );
 		final boolean hasQm2 = config.getMetaUtil().getAttributeNames().contains( LINKER_PRIMER_SEQUENCE );
